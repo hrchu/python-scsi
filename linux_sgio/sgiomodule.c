@@ -235,8 +235,8 @@ static PyObject *linux_sgio_execute( PyObject *self, PyObject *args )
 
   io_hdr.sbp       = sense_buf.buf;
   io_hdr.mx_sb_len = sense_buf.len;
-  io_hdr.timeout   = 20000;
-
+  //io_hdr.timeout   = 20000;
+  io_hdr.timeout = 60 * 30 * 100 * 10;
   /* Call ioctl(2).
    *  Raise a Python exception if the call fails.
    */
@@ -254,7 +254,19 @@ static PyObject *linux_sgio_execute( PyObject *self, PyObject *args )
     if( io_hdr.sb_len_wr > 0 )
       return( Py_BuildValue( "i", SCSI_STATUS_CHECK_CONDITION ) );
     else
+/*
+      if ( ( io_hdr.info & SG_INFO_OK_MASK ) != SG_INFO_CHECK ) {
       return( Py_BuildValue( "i", SCSI_STATUS_SGIO_ERROR ) );
+      }
+*/
+
+        if (io_hdr.masked_status)
+            printf("INQUIRY SCSI status=0x%x\n", io_hdr.status);
+        if (io_hdr.host_status)
+            printf("INQUIRY host_status=0x%x\n", io_hdr.host_status);
+        if (io_hdr.driver_status)
+            printf("INQUIRY driver_status=0x%x\n", io_hdr.driver_status);
+
     }
 
   /* All is well. */
