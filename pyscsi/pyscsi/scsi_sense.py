@@ -959,9 +959,16 @@ class SCSICheckCondition(Exception):
     def __str__(self):
         if self.show_data:
             self.print_data()
+
+        ascq = 'Unknown'
+        if self.ascq in sense_ascq_dict:
+            ascq = sense_ascq_dict[self.ascq]
+        elif (self.ascq >> 8) == 0x80:
+            ascq = 'Vendor specific'
+
         return "Check Condition: %s(0x%02X) ASC+Q:%s(0x%04X)" % (
             sense_key_dict[self.data['sense_key']], self.data['sense_key'],
-            sense_ascq_dict[self.ascq], self.ascq)
+            ascq, self.ascq)
 
     def print_data(self):
         for k, v in self.data.iteritems():
