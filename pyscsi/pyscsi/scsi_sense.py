@@ -960,7 +960,7 @@ class SCSICheckCondition(Exception):
             self.ascq = self.data['additional_sense_code_qualifier']
 
     def _ascq(self):
-        return (self.data['additional_sense_code'] << 8) + self.data['additional_sense_code_qualifier']
+        return (self.asc << 8) + self.ascq
 
     def _describe_ascq(self):
         if self.asc in vendor_specific_sense_asc:
